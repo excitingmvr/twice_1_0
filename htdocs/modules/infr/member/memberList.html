@@ -1,0 +1,208 @@
+<?php include "../../../inc/inc_general.php"; 
+    ini_set('display_errors', '0');
+
+    if(!empty($_GET['searchOption']) && !empty($_GET['searchContents'])) {
+        $searchOption = $_GET['searchOption'];
+        $searchContents = $_GET['searchContents'];
+
+        $col;
+        $cols;
+        
+       switch ($searchOption) {
+            case 1 : $col = "seq";
+                    break;
+            case 2 : $col = "name";
+                    break;
+            case 3 : $col = "number";
+                    break;
+            case 4 : $col = "all";
+                     $cols[0] = "seq";
+                     $cols[1] = "name";
+                    break;
+            default : $col = "none";
+                    break;
+        }
+        if ($col != "none") {
+            if ($col == "all"){
+                $query = "SELECT * from test WHERE 1=1 
+                AND $cols[0] LIKE \"%$searchContents%\"
+                OR $cols[1] LIKE \"%$searchContents%\"";
+            } else if($col == "number" && $searchContents!=""){
+                $query = "SELECT test.seq
+                ,test.name
+                ,test_number.phoneNum FROM test 
+                JOIN test_number 
+                ON test.seq = test_number.seq 
+                WHERE test_number.phoneNum LIKE \"%$searchContents%\"";
+            } else {
+                $query = "SELECT * from test WHERE 1=1 
+                AND 
+                $col LIKE \"%$searchContents%\"";
+            }
+         } else { 
+            $query = "SELECT * FROM test ORDER BY seq DESC";    
+        }
+    } else {
+        $query = "SELECT * FROM test ORDER BY seq DESC";
+    }
+
+    $result = mysqli_query($link,$query);
+    $total = mysqli_num_rows($result);
+    $self = $_SERVER['PHP_SELF'];
+    $page = isset($_GET['page'])?$_GET['page']:1;
+    $list = isset($_GET['list'])?$_GET['list']:10;
+    $searchOption =isset($_GET['searchOption'])?$_GET['searchOption']:0;
+    $searchContents =isset($_GET['searchContents'])?$_GET['searchContents']:"";
+
+    $block = 3;
+    $totalPage = ceil($total/$list);
+    $totalBlock = ceil($totalPage/$block);
+    $nowBlock = ceil($page/$block);
+
+    $query_arr = array();
+    $q = '';
+
+    $query_arr = $_GET;
+    $query_arr['page']= $page;
+    $query_arr['list']=$list;
+    $query_arr['searchOption']=$searchOption;
+    $query_arr['searchContents']=$searchContents;
+    $q = http_build_query($query_arr);
+
+    echo "page: ".$page."<br>totalPage: ".$totalPage."<br>";
+     if ($page <= $totalPage) {
+        if ($page > $totalPage) {
+            $page = ($totalPage==0)?1:$totalPage;
+            $query_arr = $_GET;
+            $query_arr['page']=$page;
+            $query_arr['list']=$list;
+            $query_arr['searchOption']=$searchOption;
+            $query_arr['searchContents']=$searchContents;
+            $q = http_build_query($query_arr);
+
+        echo("<script>location.replace('/modules/infr/member/memberList.html?$q');</script>");   
+        }
+    }
+        
+
+    $startPage = ($nowBlock * $block) -2;
+    if ($startPage <= 1) {
+        $startPage = 1;
+    }
+
+    $endPage = $nowBlock * $block;
+    if ($totalPage <= $endPage) {
+        $endPage = ($totalPage==0)?1:$totalPage;
+    }
+
+
+
+    $startPoint = ($page-1) * $list;
+    if($startPoint < 1) {
+        $startPoint = 0;
+    }
+
+    $query2 = $query." LIMIT $startPoint,$list;";
+    echo $query2;
+    $realData = mysqli_query($link,$query2);
+    
+    function url() {
+        global $q;
+        echo $q;
+    }
+    
+    echo "<br><br>".$_SERVER['HTTP_HOST']."/modules/infr/member/memberList.html?";
+    url();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/style.css" type="text/css">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <title>Document</title>
+    <style>
+        td,th { text-align : center; }
+    </style>    
+</head>
+<body>
+    <div>
+        <select name="list" id="list_count">
+            <option value="5" <?php if($_GET['list'] == "5") echo "selected";?>>5</option>
+            <option value="10" <?php if($_GET['list'] == "10") echo "selected";?>>10</option>
+            <option value="20" <?php if($_GET['list'] == "20") echo "selected";?>>20</option>
+        </select>
+    </div>
+
+    <form action="<?=$self?>" method="get">
+        <input type="hidden" name="page" value="<?=$page?>">
+        <input type="hidden" name="list" value="<?=$list?>">
+        <select name="searchOption" id="search">
+            <option value="1" <?php if($_GET['searchOption'] == "1") echo "selected";?>>제목</option>
+            <option value="2" <?php if($_GET['searchOption'] == "2") echo "selected";?>>내용</option>
+            <option value="3" <?php if($_GET['searchOption'] == "3") echo "selected";?>>전화번호</option>
+            <option value="4" <?php if($_GET['searchOption'] == "4") echo "selected";?>>제목+내용</option>
+        </select>
+        <input type="text" name="searchContents">
+        <input type="submit" value="검색">
+    </form>
+    <table border=1 width="100%">
+        <thead>
+            <th>seq</th> 
+            <th>name</th>
+            <?php if($_GET['searchOption']==3 && $_GET['searchContents'] != "") echo "<th>phoneNumber</th>"; ?>
+        </thead>
+        <tbody>
+        <?php for($i=0;$i<$total;$i++) { 
+            $row = mysqli_fetch_assoc($realData); 
+            if ($row == false) {
+                break;
+            }
+            ?>
+            <tr>
+                <td><?=$row['seq']?></td>
+                <td><a href="./memberView.html?seq=<?=$row['seq']?>"><?=$row['name']?></a></td>
+                <?php if($_GET['searchOption']==3 && $_GET['searchContents'] != "" ) echo "<td>".$row['phoneNum']."</td>"?>
+            </tr>
+        <?php 
+        };
+            mysqli_close($link); 
+        ?>
+        </tbody>
+    </table>
+    <a href="./memberForm.html?status=insert">go memberForm</a><br>
+    <div class="paging_bar">
+        <a href="<?=$_SERVER['PHP_SELF']?>?page=1&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">처음</a>
+<?php
+    if($startPage > 1) { ?>
+        <a href="<?=$self?>?page=<?=$startPage-1?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">이전</a>
+    <?php 
+    }
+
+    for($p=$startPage; $p<=$endPage; $p++){ ?>
+        <a href="<?=$_SERVER['PHP_SELF']?>?page=<?=$p?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>"><?=$p; ?></a>
+<?php } 
+    if($endPage < $totalPage){ ?>
+        <a href="<?=$_SERVER['PHP_SELF']?>?page=<?=$endPage+1?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">다음</a>
+<?php } ?>
+    <a href="<?=$_SERVER['PHP_SELF']?>?page=<?=$totalPage?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">끝</a>
+    </div>
+
+    <script>
+        $('#list_count').on("change", function(){
+            var list = $(this).val();
+            var url = window.location.href;
+            var tmp = url.split("?");
+            var val = tmp[1];
+            tmp = val.split("&");
+            var page = tmp[0];
+            var searchOption = tmp[2];
+            var searchContents = tmp[3];
+            window.location.href = "./memberList.html?"+page+"&list="+list+"&"+searchOption+"&"+searchContents;
+        });
+    </script>
+</body>
+</html>

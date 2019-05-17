@@ -1,0 +1,31 @@
+<?php include "../../../inc/inc_general.php"; 
+    $seq = $_GET['seq'];
+
+    $query = "SELECT * FROM test where seq = '$seq';";
+
+    $result = mysqli_query($link,$query);
+    $row = mysqli_fetch_assoc($result);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    </head>
+<body>
+    <h1>Data</h1>
+    <form method="post" action="./member.php">
+        <p>seq=<?=$row['seq']?></p>
+        <p>name=<?=$row['name']?></p>
+        <input type="hidden" name="delete_seq" value="<?=$row['seq']?>">
+        <input type="hidden" name="delete_name" value="<?=$row['name']?>">
+        <input type="submit" value="delete">
+    </form>
+    
+    <a href='./memberList.html'>go list</a><br>
+    <a href="./memberForm.html?status=update&seq=<?=$row['seq']?>&name=<?=$row['name']?>">go update</a>
+    <?php mysqli_close($link); ?>
+</body>
+</html>

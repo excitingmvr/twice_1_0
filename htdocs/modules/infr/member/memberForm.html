@@ -1,0 +1,56 @@
+<?php include "../../../inc/inc_general.php"; ?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="/jquery/script.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <?php 
+        if ($_GET['status']=="update" && isset($_GET['seq']) && isset($_GET['name'])) {
+            $seq = $_GET['seq'];
+            $name = $_GET['name'];
+            
+            echo "
+            <fieldset>
+                <legend>update</legend>
+                <form id='updateForm' method='post' action='./member.php'>
+                    <input type='text' name='update_seq' value='$seq' readonly><br>
+                    <input type='text' name='before_name' value='$name' readonly><br>
+                    <input type='text' name='update_name' placeholder='name to change' >
+                    <input type='submit' value='ok'>
+                </form>
+            </fieldset>
+            <a href='./memberList.html'>go list</a>
+            ";
+
+        } else {
+            
+            echo "
+            <fieldset>
+                <legend>insert</legend>
+                <form id='insertForm' method='post' action='./member.php' onsubmit='return validation()'>
+                    <input type='text' id='insert_name' name='insert_name' placeholder='insert your name'>
+                    <input type='submit' value='ok'>
+                </form>
+            </fieldset>
+            <a href='./memberList.html'>go list</a>
+            ";
+        }
+    ?>
+    <script>
+        function validation() {
+            if($("#insertName").val() != "") {
+                alert("빈 값은 입력할 수 없습니다.");
+                return false;
+            }
+        }
+        
+    </script>
+</body>
+</html>
