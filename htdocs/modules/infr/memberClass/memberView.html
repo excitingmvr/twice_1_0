@@ -1,4 +1,11 @@
-<?php include "../../../inc/inc_general.php"; 
+<?php 
+    include "../../../inc/inc_general.php"; 
+    include_once "./Crud.php"; 
+
+    mysqli_close($link);
+
+
+    $crud = new Crud();
     $seq = $_GET['seq'];
 
     $query = "SELECT ifmb.ifmbSeq
@@ -18,8 +25,7 @@
     ON ifmb.ifmbSeq = ifma.ifmbSeq
     WHERE ifmb.ifmbSeq = $seq;";
 
-    $result = mysqli_query($link,$query);
-    $row = mysqli_fetch_assoc($result);
+    $row = $crud->getData($query);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -47,6 +53,6 @@
     
     <a href='./memberList.html'>go list</a><br>
     <a href="./memberForm.html?process=update&seq=<?=$row['ifmbSeq']?>">go update</a>
-    <?php mysqli_close($link); ?>
+    <?php $crud->close(); ?>
 </body>
 </html>

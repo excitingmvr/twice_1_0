@@ -1,4 +1,10 @@
-<?php include "../../../inc/inc_general.php"; ?>
+<?php 
+    include_once "./Crud.php";
+
+    $crud = new Crud();
+
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -23,28 +29,38 @@
             
             $seq = $_GET['seq'];
 
-            $query = "SELECT ifmb.ifmbSeq
-            , ifmb.ifmbId
-            , ifmb.ifmbFirstName
-            , ifmb.ifmbLastName
-            , ifmb.ifmbPassword
-            , ifmb.ifmbDob
-            , ifmb.ifmbGenderCd
-            , ifme.ifmeEmail
-            , ifmp.ifmpPhone2
-            , ifmp.ifmpPhone3
-            , ifma.ifmaAddress 
-            FROM infrmember AS ifmb 
-            INNER JOIN infrmemberemail AS ifme
-            ON ifmb.ifmbSeq = ifme.ifmbSeq
-            INNER JOIN infrmemberPhone AS ifmp
-            ON  ifmb.ifmbSeq = ifmp.ifmbSeq
-            INNER JOIN infrmemberAddress AS ifma 
-            ON ifmb.ifmbSeq = ifma.ifmbSeq
-            WHERE ifmb.ifmbSeq = $seq;";
+            $query ="
+                        SELECT 
+                            ifmb.ifmbSeq
+                            , ifmb.ifmbId
+                            , ifmb.ifmbFirstName
+                            , ifmb.ifmbLastName
+                            , ifmb.ifmbPassword
+                            , ifmb.ifmbDob
+                            , ifmb.ifmbGenderCd
+                            , ifme.ifmeEmail
+                            , ifmp.ifmpPhone2
+                            , ifmp.ifmpPhone3
+                            , ifma.ifmaAddress 
+                        FROM 
+                            infrMember AS ifmb 
+                        INNER JOIN 
+                            infrMemberEmail AS ifme
+                        ON 
+                            ifmb.ifmbSeq = ifme.ifmbSeq
+                        INNER JOIN 
+                            infrMemberAddress AS ifmp
+                        ON  
+                            ifmb.ifmbSeq = ifmp.ifmbSeq
+                        INNER JOIN 
+                            infrMemberAddress AS ifma 
+                        ON 
+                            ifmb.ifmbSeq = ifma.ifmbSeq
+                        WHERE 
+                            ifmb.ifmbSeq = $seq;
+                    ";
 
-            $result = mysqli_query($link, $query);
-            $row = mysqli_fetch_assoc($result);
+            $row = $crud->getData($query);
 
             $date = date_create($row['ifmbDob']);
             $year = date_format($date,'Y');

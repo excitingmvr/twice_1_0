@@ -1,9 +1,23 @@
 <?php 
-    include "../../../inc/inc_general.php"; 
-    ini_set('display_errors', '0');
 
-    $searchOption = $_GET['searchOption'];
-    $searchContents = $_GET['searchContents'];
+    include_once "./Crud.php"; 
+    ini_set('display_errors', '0');
+    $crud = new Crud();
+    
+    
+    $page = (isset($_GET['page']))?$_GET['page']:1;
+    $list = isset($_GET['list'])?$_GET['list']:10;
+    $searchOption =isset($_GET['searchOption'])?$_GET['searchOption']:0;
+    $searchContents =isset($_GET['searchContents'])?$_GET['searchContents']:"";
+
+    $query_arr = $_GET;
+    $query_arr['page']= $page;
+    $query_arr['list']=$list;
+    $query_arr['searchOption']=$searchOption;
+    $query_arr['searchContents']=$searchContents;
+    $q = http_build_query($query_arr);
+
+
     // if(!empty($searchOption) && !empty($searchContents)) {
 
     //     $col;
@@ -48,49 +62,48 @@
     //     $query = "SELECT * FROM test ORDER BY seq DESC";
     // }
 
-    $query = "SELECT ifmb.ifmbSeq
-    , ifmb.ifmbId
-    , ifmb.ifmbFirstName
-    , ifmb.ifmbLastName
-    , ifmb.ifmbDob
-    , ifme.ifmeEmail
-    , ifmp.ifmpPhone2
-    , ifmp.ifmpPhone3
-    , ifma.ifmaAddress 
-    FROM infrmember AS ifmb 
-    INNER JOIN infrmemberemail AS ifme
-    ON ifmb.ifmbSeq = ifme.ifmbSeq 
-    AND ifme.ifmeDelNy = 0
-    INNER JOIN infrmemberPhone AS ifmp
-    ON  ifmb.ifmbSeq = ifmp.ifmbSeq
-    AND ifmp.ifmpDelNy = 0
-    INNER JOIN infrmemberAddress AS ifma 
-    ON ifmb.ifmbSeq = ifma.ifmbSeq
-    AND ifma.ifmaDelNy = 0
-    WHERE ifmb.ifmbDelNy = 0"; 
+    $query = "
+            SELECT 
+                ifmb.ifmbSeq
+                , ifmb.ifmbId
+                , ifmb.ifmbFirstName
+                , ifmb.ifmbLastName
+                , ifmb.ifmbDob
+                , ifme.ifmeEmail
+                , ifmp.ifmpPhone2
+                , ifmp.ifmpPhone3
+                , ifma.ifmaAddress 
+            FROM 
+                infrMember AS ifmb 
+            INNER JOIN 
+                infrMemberEmail AS ifme
+            ON 
+                ifmb.ifmbSeq = ifme.ifmbSeq 
+            AND 
+                ifme.ifmeDelNy = 0
+            INNER JOIN 
+                infrMemberPhone AS ifmp
+            ON  
+                ifmb.ifmbSeq = ifmp.ifmbSeq
+            AND 
+                ifmp.ifmpDelNy = 0
+            INNER JOIN 
+                infrMemberAddress AS ifma 
+            ON 
+                ifmb.ifmbSeq = ifma.ifmbSeq
+            AND 
+                ifma.ifmaDelNy = 0
+            WHERE 
+                ifmb.ifmbDelNy = 0"; 
 
-$result = mysqli_query($link,$query);
+$result = $crud->excute($query);
 $total = mysqli_num_rows($result);
 $self = $_SERVER['PHP_SELF'];
-$page = (isset($_GET['page']))?$_GET['page']:1;
-$list = isset($_GET['list'])?$_GET['list']:10;
-$searchOption =isset($_GET['searchOption'])?$_GET['searchOption']:0;
-$searchContents =isset($_GET['searchContents'])?$_GET['searchContents']:"";
 
 $block = 3;
 $totalPage = ceil($total/$list);
 $totalBlock = ceil($totalPage/$block);
 $nowBlock = ceil($page/$block);
-
-$query_arr = array();
-$q = '';
-
-$query_arr = $_GET;
-$query_arr['page']= $page;
-$query_arr['list']=$list;
-$query_arr['searchOption']=$searchOption;
-$query_arr['searchContents']=$searchContents;
-$q = http_build_query($query_arr);
 
 echo "page: ".$page."<br>totalPage: ".$totalPage."<br>";
 if ($page > $totalPage) {
@@ -99,12 +112,12 @@ if ($page > $totalPage) {
             $page = 1;
             $query_arr['page']=$page;
             $q = http_build_query($query_arr);
-            echo("<script>location.replace('/modules/infr/member/memberList.html?$q');</script>");      
+            echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");      
         } else {
             $page = $totalPage;
             $query_arr['page']=$page;
             $q = http_build_query($query_arr);
-            echo("<script>location.replace('/modules/infr/member/memberList.html?$q');</script>");  
+            echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");  
         }
     }
 }
@@ -128,16 +141,11 @@ if($startPoint < 1) {
 }
 
 $query2 = $query." LIMIT $startPoint,$list;";
+$result = $crud->getData($query2);
 echo $query2;
-$realData = mysqli_query($link,$query2);
 
-function url() {
-    global $q;
-    echo $q;
-}
 
-echo "<br><br>".$_SERVER['HTTP_HOST']."/modules/infr/member/memberList.html?";
-url();
+echo "<br><br>".$_SERVER['HTTP_HOST']."/modules/infr/memberClass/memberList.html?".$_SESSION['getValue'];
 ?>
 
 <!DOCTYPE html>
@@ -189,11 +197,11 @@ url();
         <!--?php if($_GET['searchOption']==3 && $_GET['searchContents'] != "") echo "<th>phoneNumber</th>"; ?-->
     </thead>
     <tbody>
-    <?php for($i=0;$i<$total;$i++) { 
-        $row = mysqli_fetch_assoc($realData); 
-        if ($row == false) {
-            break;
-        }
+    <?php 
+        foreach($result as $key => $row) {
+            if ($row == false) {
+                break;
+            }
         ?>
         <tr>
             <td><?=$row['ifmbSeq']?></td>
@@ -208,8 +216,8 @@ url();
             <!--?php if($_GET['searchOption']==3 && $_GET['searchContents'] != "" ) echo "<td>".$row['phoneNum']."</td>"?-->
         </tr>
     <?php 
-    };
-        mysqli_close($link); 
+        };
+        $crud->close();
     ?>
     </tbody>
 </table>
@@ -218,7 +226,7 @@ url();
     <a href="<?=$_SERVER['PHP_SELF']?>?page=1&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">처음</a>
 <?php
 if($startPage > 1) { ?>
-    <a href="<?=$self?>?page=<?=$startPage-1?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">이전</a>
+    <a href="<?=$self?>?page=<?=$page-1?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">이전</a>
 <?php 
 }
 
@@ -226,7 +234,7 @@ for($p=$startPage; $p<=$endPage; $p++){ ?>
     <a href="<?=$_SERVER['PHP_SELF']?>?page=<?=$p?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>"><?=$p; ?></a>
 <?php } 
 if($endPage < $totalPage){ ?>
-    <a href="<?=$_SERVER['PHP_SELF']?>?page=<?=$endPage+1?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">다음</a>
+    <a href="<?=$_SERVER['PHP_SELF']?>?page=<?=$page+1?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">다음</a>
 <?php } ?>
 <a href="<?=$_SERVER['PHP_SELF']?>?page=<?=$totalPage?>&list=<?=$list?>&searchOption=<?=$searchOption?>&searchContents=<?=$searchContents?>">끝</a>
 </div>
