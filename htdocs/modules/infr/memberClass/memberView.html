@@ -1,31 +1,43 @@
 <?php 
-    include "../../../inc/inc_general.php"; 
     include_once "./Crud.php"; 
-
-    mysqli_close($link);
 
 
     $crud = new Crud();
     $seq = $_GET['seq'];
 
-    $query = "SELECT ifmb.ifmbSeq
-    , ifmb.ifmbFirstName
-    , ifmb.ifmbLastName
-    , ifmb.ifmbDob
-    , ifme.ifmeEmail
-    , ifmp.ifmpPhone2
-    , ifmp.ifmpPhone3
-    , ifma.ifmaAddress 
-    FROM infrmember AS ifmb 
-    INNER JOIN infrmemberemail AS ifme
-    ON ifmb.ifmbSeq = ifme.ifmbSeq
-    INNER JOIN infrmemberPhone AS ifmp
-    ON  ifmb.ifmbSeq = ifmp.ifmbSeq
-    INNER JOIN infrmemberAddress AS ifma 
-    ON ifmb.ifmbSeq = ifma.ifmbSeq
-    WHERE ifmb.ifmbSeq = $seq;";
 
-    $row = $crud->getData($query);
+    $query = "
+                SELECT 
+                    ifmb.ifmbSeq
+                    , ifmb.ifmbId
+                    , ifmb.ifmbFirstName
+                    , ifmb.ifmbLastName
+                    , ifmb.ifmbDob
+                    , ifme.ifmeEmail
+                    , ifmp.ifmpPhone2
+                    , ifmp.ifmpPhone3
+                    , ifma.ifmaAddress 
+                FROM 
+                    infrMember AS ifmb 
+                INNER JOIN 
+                    infrMemberEmail AS ifme
+                ON 
+                    ifmb.ifmbSeq = ifme.ifmbSeq
+                INNER JOIN 
+                    infrMemberPhone AS ifmp
+                ON  
+                    ifmb.ifmbSeq = ifmp.ifmbSeq
+                INNER JOIN 
+                    infrMemberAddress AS ifma 
+                ON 
+                    ifmb.ifmbSeq = ifma.ifmbSeq
+                WHERE 
+                    ifmb.ifmbSeq = $seq;
+            ";
+
+    $tmp = $crud->getData($query);
+    $row = $tmp[0];
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,6 +50,7 @@
 <body>
     <h1>Data</h1>
     <p>ifmbSeq=<?=$row['ifmbSeq']?></p>
+    <p>ifmbId=<?=$row['ifmbId']?></p>
     <p>firstName=<?=$row['ifmbFirstName']?></p>
     <p>ifmbLastName=<?=$row['ifmbLastName']?></p>
     <p>ifmbDob=<?=$row['ifmbDob']?></p>

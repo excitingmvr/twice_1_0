@@ -4,7 +4,6 @@
     ini_set('display_errors', '0');
     $crud = new Crud();
     
-    
     $page = (isset($_GET['page']))?$_GET['page']:1;
     $list = isset($_GET['list'])?$_GET['list']:10;
     $searchOption =isset($_GET['searchOption'])?$_GET['searchOption']:0;
@@ -18,88 +17,220 @@
     $q = http_build_query($query_arr);
 
 
-    // if(!empty($searchOption) && !empty($searchContents)) {
+    if(!empty($searchOption) && !empty($searchContents)) {
 
-    //     $col;
-    //     $cols;
+        $col;
+        $cols;
         
-    //    switch ($searchOption) {
-    //         case 1 : $col = "ifmbSeq";
-    //                 break;
-    //         case 2 : $col = "ifmbId";
-    //                 break;
-    //         case 3 : $col = "number";
-    //                 break;
-    //         case 4 : $col = "all";
-    //                  $cols[0] = "seq";
-    //                  $cols[1] = "name";
-    //                 break;
-    //         default : $col = "none";
-    //                 break;
-    //     }
-    //     if ($col != "none") {
-    //         if ($col == "all"){
-    //             $query = "SELECT * from test WHERE 1=1 
-    //             AND $cols[0] LIKE \"%$searchContents%\"
-    //             OR $cols[1] LIKE \"%$searchContents%\"";
-    //         } else if($col == "number" && $searchContents!=""){
-    //             $query = "
-    //             SELECT test.seq
-    //             ,test.name
-    //             ,test_number.phoneNum FROM test 
-    //             JOIN test_number 
-    //             ON test.seq = test_number.seq 
-    //             WHERE test_number.phoneNum LIKE \"%$searchContents%\"";
-    //         } else {
-    //             $query = "SELECT * from test WHERE 1=1 
-    //             AND 
-    //             $col LIKE \"%$searchContents%\"";
-    //         }
-    //      } else { 
-    //         $query = "SELECT * FROM test ORDER BY seq DESC";    
-    //     }
-    // } else {
-    //     $query = "SELECT * FROM test ORDER BY seq DESC";
-    // }
-
-    $query = "
-            SELECT 
-                ifmb.ifmbSeq
-                , ifmb.ifmbId
-                , ifmb.ifmbFirstName
-                , ifmb.ifmbLastName
-                , ifmb.ifmbDob
-                , ifme.ifmeEmail
-                , ifmp.ifmpPhone2
-                , ifmp.ifmpPhone3
-                , ifma.ifmaAddress 
-            FROM 
-                infrMember AS ifmb 
-            INNER JOIN 
-                infrMemberEmail AS ifme
-            ON 
-                ifmb.ifmbSeq = ifme.ifmbSeq 
-            AND 
-                ifme.ifmeDelNy = 0
-            INNER JOIN 
-                infrMemberPhone AS ifmp
-            ON  
-                ifmb.ifmbSeq = ifmp.ifmbSeq
-            AND 
-                ifmp.ifmpDelNy = 0
-            INNER JOIN 
-                infrMemberAddress AS ifma 
-            ON 
-                ifmb.ifmbSeq = ifma.ifmbSeq
-            AND 
-                ifma.ifmaDelNy = 0
-            WHERE 
-                ifmb.ifmbDelNy = 0"; 
+       switch ($searchOption) {
+            case 1 : $col = "ifmb.ifmbSeq";
+                    break;
+            case 2 : $col = "ifmb.ifmbId";
+                    break;
+            case 3 : $col = "phone";
+                     $cols[0] = "ifmp.ifmpPhone2";
+                     $cols[0] = "ifmp.ifmpPhone3";
+                    break;
+            case 4 : $col = "all";
+                     $cols[0] = "ifmb.ifmbSeq";
+                     $cols[1] = "ifmb.ifmbId";
+                    break;
+            default : $col = "none";
+                    break;
+        }
+        if ($col != "none") {
+            if ($col == "all"){
+                $query = "
+                            SELECT 
+                                ifmb.ifmbSeq
+                                , ifmb.ifmbId
+                                , ifmb.ifmbFirstName
+                                , ifmb.ifmbLastName
+                                , ifmb.ifmbDob
+                                , ifme.ifmeEmail
+                                , ifmp.ifmpPhone2
+                                , ifmp.ifmpPhone3
+                                , ifma.ifmaAddress 
+                            FROM 
+                                infrMember AS ifmb 
+                            INNER JOIN 
+                                infrMemberEmail AS ifme
+                            ON 
+                                ifmb.ifmbSeq = ifme.ifmbSeq 
+                            AND 
+                                ifme.ifmeDelNy = 0
+                            INNER JOIN 
+                                infrMemberPhone AS ifmp
+                            ON  
+                                ifmb.ifmbSeq = ifmp.ifmbSeq
+                            AND 
+                                ifmp.ifmpDelNy = 0
+                            INNER JOIN 
+                                infrMemberAddress AS ifma 
+                            ON 
+                                ifmb.ifmbSeq = ifma.ifmbSeq
+                            AND 
+                                ifma.ifmaDelNy = 0
+                            WHERE 
+                                ifmb.ifmbDelNy = 0
+                            AND 
+                                $cols[0] LIKE \"%$searchContents%\"
+                            OR 
+                                $cols[1] LIKE \"%$searchContents%\"
+                        ";
+            } else if($col == "phone"){
+                $query = "
+                            SELECT 
+                                ifmb.ifmbSeq
+                                , ifmb.ifmbId
+                                , ifmb.ifmbFirstName
+                                , ifmb.ifmbLastName
+                                , ifmb.ifmbDob
+                                , ifme.ifmeEmail
+                                , ifmp.ifmpPhone2
+                                , ifmp.ifmpPhone3
+                                , ifma.ifmaAddress 
+                            FROM 
+                                infrMember AS ifmb 
+                            INNER JOIN 
+                                infrMemberEmail AS ifme
+                            ON 
+                                ifmb.ifmbSeq = ifme.ifmbSeq 
+                            AND 
+                                ifme.ifmeDelNy = 0
+                            INNER JOIN 
+                                infrMemberPhone AS ifmp
+                            ON  
+                                ifmb.ifmbSeq = ifmp.ifmbSeq
+                            AND 
+                                ifmp.ifmpDelNy = 0
+                            INNER JOIN 
+                                infrMemberAddress AS ifma 
+                            ON 
+                                ifmb.ifmbSeq = ifma.ifmbSeq
+                            AND 
+                                ifma.ifmaDelNy = 0
+                            WHERE 
+                                ifmb.ifmbDelNy = 0 
+                            AND
+                                ifmp.ifmpPhone2 LIKE \"%$searchContents%\"
+                            OR 
+                                ifmp.ifmpPhone3 LIKE \"%$searchContents%\"
+                        ";
+            } else {
+                $query = "
+                            SELECT 
+                                ifmb.ifmbSeq
+                                , ifmb.ifmbId
+                                , ifmb.ifmbFirstName
+                                , ifmb.ifmbLastName
+                                , ifmb.ifmbDob
+                                , ifme.ifmeEmail
+                                , ifmp.ifmpPhone2
+                                , ifmp.ifmpPhone3
+                                , ifma.ifmaAddress 
+                            FROM 
+                                infrMember AS ifmb 
+                            INNER JOIN 
+                                infrMemberEmail AS ifme
+                            ON 
+                                ifmb.ifmbSeq = ifme.ifmbSeq 
+                            AND 
+                                ifme.ifmeDelNy = 0
+                            INNER JOIN 
+                                infrMemberPhone AS ifmp
+                            ON  
+                                ifmb.ifmbSeq = ifmp.ifmbSeq
+                            AND 
+                                ifmp.ifmpDelNy = 0
+                            INNER JOIN 
+                                infrMemberAddress AS ifma 
+                            ON 
+                                ifmb.ifmbSeq = ifma.ifmbSeq
+                            AND 
+                                ifma.ifmaDelNy = 0 
+                            WHERE 
+                                1=1 
+                            AND 
+                                $col LIKE \"%$searchContents%\"";
+            }
+         } else { 
+            $query = "
+                        SELECT 
+                            ifmb.ifmbSeq
+                            , ifmb.ifmbId
+                            , ifmb.ifmbFirstName
+                            , ifmb.ifmbLastName
+                            , ifmb.ifmbDob
+                            , ifme.ifmeEmail
+                            , ifmp.ifmpPhone2
+                            , ifmp.ifmpPhone3
+                            , ifma.ifmaAddress 
+                        FROM 
+                            infrMember AS ifmb 
+                        INNER JOIN 
+                            infrMemberEmail AS ifme
+                        ON 
+                            ifmb.ifmbSeq = ifme.ifmbSeq 
+                        AND 
+                            ifme.ifmeDelNy = 0
+                        INNER JOIN 
+                            infrMemberPhone AS ifmp
+                        ON  
+                            ifmb.ifmbSeq = ifmp.ifmbSeq
+                        AND 
+                            ifmp.ifmpDelNy = 0
+                        INNER JOIN 
+                            infrMemberAddress AS ifma 
+                        ON 
+                            ifmb.ifmbSeq = ifma.ifmbSeq
+                        AND 
+                            ifma.ifmaDelNy = 0
+                        WHERE 
+                            ifmb.ifmbDelNy = 0
+                        ";     
+        }
+    } else {
+        $query = "
+                    SELECT 
+                        ifmb.ifmbSeq
+                        , ifmb.ifmbId
+                        , ifmb.ifmbFirstName
+                        , ifmb.ifmbLastName
+                        , ifmb.ifmbDob
+                        , ifme.ifmeEmail
+                        , ifmp.ifmpPhone2
+                        , ifmp.ifmpPhone3
+                        , ifma.ifmaAddress 
+                    FROM 
+                        infrMember AS ifmb 
+                    INNER JOIN 
+                        infrMemberEmail AS ifme
+                    ON 
+                        ifmb.ifmbSeq = ifme.ifmbSeq 
+                    AND 
+                        ifme.ifmeDelNy = 0
+                    INNER JOIN 
+                        infrMemberPhone AS ifmp
+                    ON  
+                        ifmb.ifmbSeq = ifmp.ifmbSeq
+                    AND 
+                        ifmp.ifmpDelNy = 0
+                    INNER JOIN 
+                        infrMemberAddress AS ifma 
+                    ON 
+                        ifmb.ifmbSeq = ifma.ifmbSeq
+                    AND 
+                        ifma.ifmaDelNy = 0
+                    WHERE 
+                        ifmb.ifmbDelNy = 0
+                "; 
+    }
 
 $result = $crud->excute($query);
 $total = mysqli_num_rows($result);
 $self = $_SERVER['PHP_SELF'];
-
+#페이징
 $block = 3;
 $totalPage = ceil($total/$list);
 $totalBlock = ceil($totalPage/$block);
@@ -139,7 +270,7 @@ $startPoint = ($page-1) * $list;
 if($startPoint < 1) {
     $startPoint = 0;
 }
-
+#
 $query2 = $query." LIMIT $startPoint,$list;";
 $result = $crud->getData($query2);
 echo $query2;
@@ -174,14 +305,14 @@ echo "<br><br>".$_SERVER['HTTP_HOST']."/modules/infr/memberClass/memberList.html
     <input type="hidden" name="page" value="<?=$page?>">
     <input type="hidden" name="list" value="<?=$list?>">
     <select name="searchOption" id="search">
-        <option value="1" <?php if($_GET['searchOption'] == "1") echo "selected";?>>제목</option>
-        <option value="2" <?php if($_GET['searchOption'] == "2") echo "selected";?>>내용</option>
-        <option value="3" <?php if($_GET['searchOption'] == "3") echo "selected";?>>전화번호</option>
-        <option value="4" <?php if($_GET['searchOption'] == "4") echo "selected";?>>제목+내용</option>
+        <option value="1" <?php if($_GET['searchOption'] == "1") echo "selected";?>>seq</option>
+        <option value="2" <?php if($_GET['searchOption'] == "2") echo "selected";?>>userId</option>
+        <option value="3" <?php if($_GET['searchOption'] == "3") echo "selected";?>>Phone</option>
+        <option value="4" <?php if($_GET['searchOption'] == "4") echo "selected";?>>seq+userId</option>
     </select>
-    <input type="text" name="searchContents" disabled>
+    <input type="text" name="searchContents" <?php if(isset($_GET['searchContents'])) echo "value='$_GET[searchContents]'" ?>>
     <input type="submit" value="검색">
-    <h3>다음에 대한 검색 내용 : <?=$searchContents?></h3>
+    <?php if(isset($searchContents) && $searchContents != ""  && $searchContents != "0") echo "<h3>다음에 대한 검색 내용 : ".$searchContents."</h3>"; ?>
 </form>
 <table border=1 width="100%">
     <thead>

@@ -7,22 +7,11 @@
             parent::__construct();
         }
 
-        // public function sendQuery($query) {
-        //     $result = mysqli_query($this->connection,$query);
-            
-        //     if ($result == false) {
-        //         return false;
-        //     } else {
-        //         return $result;
-        //     }
-        // }
-
+        public function getConnection() {
+            return $this->connection;
+        }
         public function getInsertId() {
             return mysqli_insert_id($this->connection);
-        }
-
-        public function add () {
-            echo "sadasdfasdfasdfasf";
         }
 
         public function getData($query) {
@@ -30,19 +19,11 @@
             if($result == false) {
                 return false;
             }
-
-            if (mysqli_num_rows($result) > 1) {
                 $rows = array();
                 while ($row = mysqli_fetch_assoc($result)) {
                     $rows[] = $row;
                 }
                 return $rows;
-            } else {
-                $row = mysqli_fetch_assoc($result);
-                return $row;
-            }
-
-            
         }
 
         public function excute($query) {
@@ -56,7 +37,7 @@
             }
         }
 
-        public function delete($seq, $table) { 
+        public function delete($seq, $table) {
             $query = "DELETE FROM $table WHERE ifmbSeq = $seq";
             
             $result = mysqli_query($this->connection, $query);

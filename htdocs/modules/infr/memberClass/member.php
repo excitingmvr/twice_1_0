@@ -1,7 +1,6 @@
 <?php 
     //include "../../../inc/inc_general.php";
-    include_once "./Crud.php"; 
-
+    include_once "./Crud.php";
    // mysqli_close($link);
 
     $crud = new Crud();
@@ -22,13 +21,14 @@
     $hash;
 
 
-    $Dob = $_POST['year']."-".$_POST['month']."-".$_POST['day'];
+    $Dob = $year."-".$month."-".$day;
     if($_POST['process'] == "insert") {  
         
 
         if ($_POST['password'] != $_POST['checkPassword']){
 
             echo "비밀번호가 일치하지 않습니다.";
+            $crud->move("./memberForm.html");
         } else {
             $hash = password_hash($_POST['password'], PASSWORD_DEFAULT);
 
@@ -106,11 +106,13 @@
             }
         }
     } else if ($_POST['process'] == "update"){ 
-        $seq = $_POST['seq']; // 삭제
+        $seq = $_POST['seq'];
 
         $query = "
-                    UPDATE infrMember 
-                    SET ifmbId = '$userId'
+                    UPDATE 
+                        infrMember 
+                    SET 
+                        ifmbId = '$userId'
                         , ifmbFirstName = '$firstName'
                         , ifmbLastName = '$lastName'
                         , ifmbGenderCd = '$gender'
@@ -122,20 +124,26 @@
 
         if ($result == true) {
             $query2 = "
-                        UPDATE infrMemberAddress 
-                        SET ifmaAddress = '$address'
+                        UPDATE 
+                            infrMemberAddress 
+                        SET 
+                            ifmaAddress = '$address'
                             , ifmaModDatetime = NOW(6)
-                        WHERE ifmbSeq = $seq;
+                        WHERE 
+                            ifmbSeq = $seq;
                     ";
                 
                 
             $result2 = $crud->excute($query2);
                 
             $query3 = "
-                        UPDATE infrMemberEmail
-                        SET ifmeEmail = '$email'
+                        UPDATE 
+                            infrMemberEmail
+                        SET 
+                            ifmeEmail = '$email'
                             , ifmeModDatetime = NOW(6)
-                        WHERE ifmbSeq = $seq;
+                        WHERE 
+                            ifmbSeq = $seq;
                     ";
 
 
@@ -143,18 +151,20 @@
 
 
             $query4 = "
-                        UPDATE infrMemberPhone 
-                        SET ifmpPhone2 = '$middleNumber'
+                        UPDATE 
+                            infrMemberPhone 
+                        SET 
+                            ifmpPhone2 = '$middleNumber'
                             , ifmpPhone3 = '$lastNumber'
                             , ifmpModDatetime = NOW(6)
-                            WHERE imfbSeq = $seq;
+                        WHERE 
+                            imfbSeq = $seq;
                     ";
 
             $result4 = $crud->excute($query4);
 
             echo $query."<br>".$query2."<br>".$query3."<br>".$query4;
             $crud->alert("update success");
-            echo $_SESSION['getValue'];
             $crud->move("./memberlist.html");
         }
     } else if ($_POST['process'] == "delete") {
@@ -169,13 +179,18 @@
                             , ifma.ifmaDelNy = 1
                             , ifme.ifmeDelNy = 1
                             , ifmp.ifmpDelNy = 1  
-                        WHERE ifmb.ifmbSeq = $seq
-                        AND ifma.ifmbSeq = $seq
-                        AND ifme.ifmbSeq = $seq
-                        AND ifmp.ifmbSeq = $seq;
+                        WHERE 
+                            ifmb.ifmbSeq = $seq
+                        AND 
+                            ifma.ifmbSeq = $seq
+                        AND 
+                            ifme.ifmbSeq = $seq
+                        AND 
+                            ifmp.ifmbSeq = $seq;
                     ";
 
-        $delResult = $crud->exqute($delQuery);
+        $delResult = $crud->excute($delQuery);
+
         $crud->alert("delete success");
         $crud->move("./memberList.html");
 

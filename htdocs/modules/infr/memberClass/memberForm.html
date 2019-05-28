@@ -20,11 +20,18 @@
         if($("#password").val() == "") {
             alert("빈 값은 입력할 수 없습니다.");
             return false;
+        } else {
+            if ($('#password').val().length() <= 8) {
+                alert("최소 8자 이상 입력해주세요.");
+                return false;
+            } else {
+                return true;
+            }
         }
     }
 </script>
 <body>
-    <?php 
+    <?php
         if(!empty($_GET['seq'])){
             
             $seq = $_GET['seq'];
@@ -35,9 +42,8 @@
                             , ifmb.ifmbId
                             , ifmb.ifmbFirstName
                             , ifmb.ifmbLastName
-                            , ifmb.ifmbPassword
                             , ifmb.ifmbDob
-                            , ifmb.ifmbGenderCd
+                            , ifmbGenderCd
                             , ifme.ifmeEmail
                             , ifmp.ifmpPhone2
                             , ifmp.ifmpPhone3
@@ -49,7 +55,7 @@
                         ON 
                             ifmb.ifmbSeq = ifme.ifmbSeq
                         INNER JOIN 
-                            infrMemberAddress AS ifmp
+                            infrMemberPhone AS ifmp
                         ON  
                             ifmb.ifmbSeq = ifmp.ifmbSeq
                         INNER JOIN 
@@ -60,14 +66,17 @@
                             ifmb.ifmbSeq = $seq;
                     ";
 
-            $row = $crud->getData($query);
+            $tmp = $crud->getData($query);
+            $row = $tmp[0];
+
 
             $date = date_create($row['ifmbDob']);
             $year = date_format($date,'Y');
             $month = date_format($date,'m');
             $day = date_format($date,'d');
 
-            $pw = $row['ifmbPassword'];
+
+
         }
     ?>
     <form method='post' action='./member.php' onsubmit="return validation();">
@@ -108,8 +117,7 @@
                 echo "<input type='hidden' name='process' value='insert'>";
             } else if ($_GET['process'] == "update") {
                 echo "<input type='hidden' name='process' value='update'>
-                <input type='hidden' name='seq' value='$seq'>
-                <input type='hidden' name='hash' value='$pw'>";
+                <input type='hidden' name='seq' value='$seq'>";
             } else {
                 exit;
             }
