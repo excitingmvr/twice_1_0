@@ -1,26 +1,8 @@
 <?php 
     include_once "./Crud.php";
 
-    ini_set('display_errors', '0');
     $crud = new Crud();
-    $query_arr = $_GET;
-    $query_arr['process'] = "list";
 
-    $q = http_build_query($query_arr);
-
-
-
-    function updateSlected($variable, $value) {
-        if($_GET['process'] == "update" && $variable == $value) {
-            echo "selected";
-        }
-    }
-
-    function updateValue($variable) {
-        if ($_GET['process'] == "update"){
-            echo "value=$variable";
-        }
-    }
 
 ?>
 
@@ -97,38 +79,38 @@
 
         }
     ?>
-    <form method='post' action='./member.php?<?=$q;?>' onsubmit="return validation();">
-        아이디<input type="text" name="userId" <?php updateValue($row['ifmbId']); ?>><br>
+    <form method='post' action='./member.php' onsubmit="return validation();">
+        아이디<input type="text" name="userId" <?php if($_GET['process'] == "update") echo "value=".$row['ifmbId']; ?>><br>
         
         <?php if($_GET['process']=="insert"){ ?>
             비밀번호<input id="password" type="password" name="password"><br>
             비밀번호확인<input type="password" name="checkPassword" ><br>
         <?php } ?>
-        이름<input type='text' name='firstName' <?php updateValue($row['ifmbFirstName']); ?>><br>
-        성<input type="text" name="lastName" <?php updateValue($row['ifmbLastName']); ?>><br>
-        이메일주소<input type="email" name="email" <?php updateValue($row['ifmaAddress']); ?>><br>
-        전화번호<input type="text" name="middleNumber" <?php updateValue($row['ifmpPhone2']); ?>>
-        <input type="text" name="lastNumber" <?php updateValue($row['ifmpPhone3']); ?>><br>
+        이름<input type='text' name='firstName' <?php if($_GET['process'] == "update") echo "value=".$row['ifmbFirstName']; ?>><br>
+        성<input type="text" name="lastName" <?php if($_GET['process'] == "update") echo "value=".$row['ifmbLastName']; ?>><br>
+        이메일주소<input type="email" name="email" <?php if($_GET['process'] == "update") echo "value=".$row['ifmaAddress']; ?>><br>
+        전화번호<input type="text" name="middleNumber" <?php if($_GET['process'] == "update") echo "value=".$row['ifmpPhone2']; ?>>
+        <input type="text" name="lastNumber" <?php if($_GET['process'] == "update") echo "value=".$row['ifmpPhone3']; ?>><br>
         생일<select name="year" id="">
-            <option value="1999" <?php updateSlected($year, "1999"); ?>>1999</option>
-            <option value="2000" <?php updateSlected($year, "2000"); ?>>2000</option>
-            <option value="2001" <?php updateSlected($year, "2001"); ?>>2001</option>
+            <option value="1999" <?php if($_GET['process'] == "update" && $year == "1999") echo "selected"; ?>>1999</option>
+            <option value="2000" <?php if($_GET['process'] == "update" && $year == "2000") echo "selected"; ?>>2000</option>
+            <option value="2001" <?php if($_GET['process'] == "update" && $year == "2001") echo "selected"; ?>>2001</option>
         </select>
         <select name="month" id="">
-            <option value="01" <?php updateSlected($month, "01"); ?>>1</option>
-            <option value="02" <?php updateSlected($month, "02"); ?>>2</option>
-            <option value="03" <?php updateSlected($month, "03"); ?>>3</option>
+            <option value="01" <?php if($_GET['process'] == "update" && $month == "01") echo "selected"; ?>>1</option>
+            <option value="02" <?php if($_GET['process'] == "update" && $month == "02") echo "selected"; ?>>2</option>
+            <option value="03" <?php if($_GET['process'] == "update" && $month == "03") echo "selected"; ?>>3</option>
         </select>
         <select name="day" id="">
-            <option value="01" <?php updateSlected($day, "01"); ?>>1</option>
-            <option value="02" <?php updateSlected($day, "02"); ?>>2</option>
-            <option value="03" <?php updateSlected($day, "03"); ?>>3</option>
+            <option value="01" <?php if($_GET['process'] == "update" && $day == "01") echo "selected"; ?>>1</option>
+            <option value="02" <?php if($_GET['process'] == "update" && $day == "02") echo "selected"; ?>>2</option>
+            <option value="03" <?php if($_GET['process'] == "update" && $day == "03") echo "selected"; ?>>3</option>
         </select> <br>
         성별<select name="gender" id="">
-            <option value="1" <?php updateSlected($row['ifmbGenderCd'], "1"); ?>>남자</option>
-            <option value="2" <?php updateSlected($row['ifmbGenderCd'], "2"); ?>>여자</option>
+            <option value="1" <?php if($_GET['process'] == "update" && $row['ifmbGenderCd'] == "1") echo "selected"; ?>>남자</option>
+            <option value="2" <?php if($_GET['process'] == "update" && $row['ifmbGenderCd'] == "2") echo "selected"; ?>>여자</option>
         </select><br>
-        주소<input type="text" name="address" <?php updateValue($row['ifmaAddress']); ?>><br>
+        주소<input type="text" name="address" <?php if($_GET['process'] == "update") echo "value=".$row['ifmaAddress']; ?>><br>
 
         <?php
             if ($_GET['process'] == "insert") {
@@ -142,6 +124,16 @@
         ?>
         <input type="submit" value="ok" >
     </form>
-    <a href="javascript:location.replace('./memberList.html?<?=$q?>');">go list</a>
+    <a href='./memberList.html'>go list</a>
 </body>
 </html>
+
+<!-- 아이디
+이름
+성
+이메일주소
+전화번호
+생일
+성별
+주소 -->
+

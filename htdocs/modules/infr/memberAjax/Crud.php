@@ -2,7 +2,7 @@
     include_once 'DbConfig.php';
     
     class Crud extends DbConfig {
-
+        
         private $selectQuery = "
             SELECT 
                 ifmb.ifmbSeq
@@ -39,7 +39,7 @@
             AND
                 1=1 
         ";
-        
+
         public function __construct() {
             parent::__construct();
         }
@@ -61,6 +61,16 @@
                     $rows[] = $row;
                 }
                 return $rows;
+        }
+
+        public function getOneData($query) {
+            $result = mysqli_query($this->connection, $query);
+            if ($result == false) {
+                return false;
+            }
+            $row = mysqli_fetch_assoc($result);
+
+            return $row;
         }
 
         public function excute($query) {
@@ -104,11 +114,11 @@
                 echo "selected";
             }
         }
+        
 
         public function getSelectQuery() {
             return $this->selectQuery;
         }
-        
     }
 ?>
 

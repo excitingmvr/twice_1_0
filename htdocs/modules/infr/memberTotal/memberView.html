@@ -1,0 +1,24 @@
+<?php 
+    $seq = $_GET['seq'];
+    $memberInfo = json_decode(file_get_contents("http://localhost/modules/infr/memberTotal/read_one.php?seq={$seq}"),true);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    </head>
+<body>
+    <h1>Data</h1>
+    <?
+        foreach($memberInfo as $key=>$value){
+            echo "<p>{$key} = {$value}</p>";
+        }
+    ?>
+    <a href="./ajax.html">go list</a><br>
+    <a href="./memberForm.html?seq=<?=$memberInfo['ifmbSeq']?>">go update</a><br>
+    <a href="./delete.php?seq=<?=$memberInfo['ifmbSeq']?>">go delete</a>
+</body>
+</html>

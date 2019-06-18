@@ -1,31 +1,18 @@
 <?php 
-    //include "../../../inc/inc_general.php";
     include_once "./Crud.php";
-   // mysqli_close($link);
 
     $crud = new Crud();
     //print_r($_POST);
 
-    $query_arr = $_GET;
-    $query_arr['process'] = "list";
-
-    $q = http_build_query($query_arr);
-
-    print_r($query_arr);
-
-    $userId = $_POST['userId'];
-    $firstName = $_POST['firstName'];
-    $lastName = $_POST['lastName'];
-    $email = $_POST['email'];
-    $middleNumber = $_POST['middleNumber'];
-    $lastNumber = $_POST['lastNumber'];
-    $year = $_POST['year'];
-    $month = $_POST['month'];
-    $day = $_POST['day'];
-    $gender = $_POST['gender'];
-    $address = $_POST['address'];
-    $hash;
-
+    $crud->insert(
+        $_POST['userId']
+        , $_POST['firstName']
+        , $_POST['lastName']
+        , $_POST['email']
+        , $_POST['middleNumber']
+        , $_POST['lastNumber']
+        , $_POST['year'], $_POST['month'], $_POST['day'], $_POST['gender'], $_POST['address'], $_POST['password'], $_POST['checkPassword']);
+    
 
     $Dob = $year."-".$month."-".$day;
     if($_POST['process'] == "insert") {  
@@ -108,7 +95,7 @@
                             ";
                 $result4 = $crud->excute($query4);
                 $crud->alert("insert success");
-                echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");
+                $crud->move("./memberlist.html");
             }
         }
     } else if ($_POST['process'] == "update"){ 
@@ -171,7 +158,7 @@
 
             echo $query."<br>".$query2."<br>".$query3."<br>".$query4;
             $crud->alert("update success");
-            echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");
+            $crud->move("./memberlist.html");
         }
     } else if ($_POST['process'] == "delete") {
         $seq = $_POST['delete_seq'];
@@ -198,13 +185,63 @@
         $delResult = $crud->excute($delQuery);
 
         $crud->alert("delete success");
-        // echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");
+        $crud->move("./memberList.html");
 
     }else{
         exit;
         // 무조건 else는 만들것
         // bypass
     }
-    
-?>
 
+    // echo $query2;
+    // echo $query3;
+    // echo $query4;
+
+    //select ifmbSeq, ifmbPassword, ifmbFirstName, ifmbLastName, ifmbGenderCd, ifmbDob from infrMember;
+    //select ifmbSeq, ifmaAddress from infrMemberAddress;
+    //select ifmbSeq, ifmeEmail from infrMemberEmail;
+    //select ifmbSeq, ifmpPhone2, ifmpPhone3  from infrMemberAddress;
+    //delete 처리를 tableDelNy 값이 default가 NULL이라서 삭제문에서 컬럼값을 1로 바꾸는걸로 했어요 실제 삭제 x 
+//     두개 다 해야 되
+//     deleㅅㄷ- > 이건 실제로 지우는 거 
+//     deletebyupdate -> 니가 한건 이거
+
+
+
+
+    // if(!empty($_POST['insert_name'])){
+    //     $name = $_POST['insert_name'];
+    //     $query = "insert into test (name) value ('$name');";
+
+    //     if($result = mysqli_query($link,$query)){
+    //         $crud->move("./memberList.html");
+    //     } else {
+    //         die("update fail");
+    //     }
+    // };
+
+
+    // if(!empty($_POST['update_name']) && !empty($_POST['before_name']) && !empty($_POST['update_seq'])){
+    //     $seq = $_POST['update_seq'];
+    //     $before_name = $_POST['before_name'];
+    //     $update_name = $_POST['update_name'];
+    //     $query = "update test set name = '$update_name' where seq = '$seq' and name = '$before_name';";
+    //     if($result = mysqli_query($link,$query)){
+    //         $crud->move("./memberList.html");
+    //     } else {
+    //         die("update fail");
+    //     }
+    // }
+
+    // if(!empty($_POST['delete_seq']) && !empty($_POST['delete_name'])){
+    //     $seq = $_POST['delete_seq'];
+    //     $delete_name = $_POST['delete_name'];
+    //     $query = "delete from test where seq = $seq and name = '$delete_name';";
+    //     if($result = mysqli_query($link,$query)){
+    //         echo "<script>location.href='./memberList.html'</script>";
+    //     } else {
+    //         die("delete fail");
+    //     }
+    // }
+
+?>

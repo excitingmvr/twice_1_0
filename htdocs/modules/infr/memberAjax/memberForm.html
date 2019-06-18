@@ -10,7 +10,7 @@
 
 
 
-    function updateSlected($variable, $value) {
+    function updateSelected($variable, $value) {
         if($_GET['process'] == "update" && $variable == $value) {
             echo "selected";
         }
@@ -39,7 +39,7 @@
             alert("빈 값은 입력할 수 없습니다.");
             return false;
         } else {
-            if ($('#password').val().length() <= 8) {
+            if ($('#password').val().length < 8) {
                 alert("최소 8자 이상 입력해주세요.");
                 return false;
             } else {
@@ -51,42 +51,15 @@
 <body>
     <?php
         if(!empty($_GET['seq'])){
-            
             $seq = $_GET['seq'];
 
-            $query ="
-                        SELECT 
-                            ifmb.ifmbSeq
-                            , ifmb.ifmbId
-                            , ifmb.ifmbFirstName
-                            , ifmb.ifmbLastName
-                            , ifmb.ifmbDob
-                            , ifmbGenderCd
-                            , ifme.ifmeEmail
-                            , ifmp.ifmpPhone2
-                            , ifmp.ifmpPhone3
-                            , ifma.ifmaAddress 
-                        FROM 
-                            infrMember AS ifmb 
-                        INNER JOIN 
-                            infrMemberEmail AS ifme
-                        ON 
-                            ifmb.ifmbSeq = ifme.ifmbSeq
-                        INNER JOIN 
-                            infrMemberPhone AS ifmp
-                        ON  
-                            ifmb.ifmbSeq = ifmp.ifmbSeq
-                        INNER JOIN 
-                            infrMemberAddress AS ifma 
-                        ON 
-                            ifmb.ifmbSeq = ifma.ifmbSeq
-                        WHERE 
+            $query =$crud->getSelectQuery().
+                    "    
+                        AND 
                             ifmb.ifmbSeq = $seq;
                     ";
 
-            $tmp = $crud->getData($query);
-            $row = $tmp[0];
-
+            $row = $crud->getOneData($query);
 
             $date = date_create($row['ifmbDob']);
             $year = date_format($date,'Y');
@@ -110,23 +83,23 @@
         전화번호<input type="text" name="middleNumber" <?php updateValue($row['ifmpPhone2']); ?>>
         <input type="text" name="lastNumber" <?php updateValue($row['ifmpPhone3']); ?>><br>
         생일<select name="year" id="">
-            <option value="1999" <?php updateSlected($year, "1999"); ?>>1999</option>
-            <option value="2000" <?php updateSlected($year, "2000"); ?>>2000</option>
-            <option value="2001" <?php updateSlected($year, "2001"); ?>>2001</option>
+            <option value="1999" <?php updateSelected($year, "1999"); ?>>1999</option>
+            <option value="2000" <?php updateSelected($year, "2000"); ?>>2000</option>
+            <option value="2001" <?php updateSelected($year, "2001"); ?>>2001</option>
         </select>
         <select name="month" id="">
-            <option value="01" <?php updateSlected($month, "01"); ?>>1</option>
-            <option value="02" <?php updateSlected($month, "02"); ?>>2</option>
-            <option value="03" <?php updateSlected($month, "03"); ?>>3</option>
+            <option value="01" <?php updateSelected($month, "01"); ?>>1</option>
+            <option value="02" <?php updateSelected($month, "02"); ?>>2</option>
+            <option value="03" <?php updateSelected($month, "03"); ?>>3</option>
         </select>
         <select name="day" id="">
-            <option value="01" <?php updateSlected($day, "01"); ?>>1</option>
-            <option value="02" <?php updateSlected($day, "02"); ?>>2</option>
-            <option value="03" <?php updateSlected($day, "03"); ?>>3</option>
+            <option value="01" <?php updateSelected($day, "01"); ?>>1</option>
+            <option value="02" <?php updateSelected($day, "02"); ?>>2</option>
+            <option value="03" <?php updateSelected($day, "03"); ?>>3</option>
         </select> <br>
         성별<select name="gender" id="">
-            <option value="1" <?php updateSlected($row['ifmbGenderCd'], "1"); ?>>남자</option>
-            <option value="2" <?php updateSlected($row['ifmbGenderCd'], "2"); ?>>여자</option>
+            <option value="1" <?php updateSelected($row['ifmbGenderCd'], "1"); ?>>남자</option>
+            <option value="2" <?php updateSelected($row['ifmbGenderCd'], "2"); ?>>여자</option>
         </select><br>
         주소<input type="text" name="address" <?php updateValue($row['ifmaAddress']); ?>><br>
 
@@ -137,7 +110,7 @@
                 echo "<input type='hidden' name='process' value='update'>
                 <input type='hidden' name='seq' value='$seq'>";
             } else {
-                exit;
+                return;
             }
         ?>
         <input type="submit" value="ok" >

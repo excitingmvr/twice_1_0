@@ -6,6 +6,10 @@
     $seq = $_GET['seq'];
 
     $query_arr = $_GET;
+    $query_arr['page'] = (isset($_GET['page']))?$_GET['page']:1;
+    $query_arr['list'] = isset($_GET['list'])?$_GET['list']:10;
+    $query_arr['searchOption'] = isset($_GET['searchOption'])?$_GET['searchOption']:1;
+    $query_arr['searchContents'] = isset($_GET['searchContents'])?$_GET['searchContents']:"";
     $query_arr['process'] = "update";
 
     $q = http_build_query($query_arr);

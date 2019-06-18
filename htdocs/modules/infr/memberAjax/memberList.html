@@ -1,0 +1,70 @@
+<?php 
+
+    include_once "./Crud.php"; 
+    ini_set('display_errors', '0');
+    $crud = new Crud();
+    
+    $page = (isset($_GET['page']))?$_GET['page']:1;
+    $list = (isset($_GET['list']))?$_GET['list']:10;
+    $searchOption =(isset($_GET['searchOption']))?$_GET['searchOption']:1;
+    $searchContents =(isset($_GET['searchContents']))?$_GET['searchContents']:"";
+    $seq = (isset($_GET['seq']))?$_GET['seq']:"none";
+    $process = (isset($_GET['process']))?$_GET['process']:"list";
+
+    $query_arr = $_GET;
+    $query_arr['page']= $page;
+    $query_arr['list']=$list;
+    $query_arr['searchOption']=$searchOption;
+    $query_arr['searchContents']=$searchContents;
+    $query_arr['seq']=$seq;
+    $query_arr['process']=$process;
+    $q = http_build_query($query_arr);
+
+
+    function pagingUrl($page, $seq, $process) {
+        global  $list, $searchContents, $searchOption;
+        $data = "?page=$page&list=$list&searchOption=$searchOption&searchContents=$searchContents&seq=$seq&process=$process";
+        echo $data;
+    }
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link rel="stylesheet" href="/css/style.css" type="text/css">
+<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+<script type="text/javascript" src="../../../jquery/script.js"></script>
+<title>Document</title>
+<style>
+    td,th { text-align : center; }
+</style>    
+</head>
+<body>
+    <div>
+        <select name="list" id="list_count">
+            <option value="5" <?php $crud->optionSelected($_GET['list'],"5"); ?>>5</option>
+            <option value="10" <?php $crud->optionSelected($_GET['list'],"10"); ?>>10</option>
+            <option value="20" <?php $crud->optionSelected($_GET['list'],"20"); ?>>20</option>
+        </select>
+    </div>
+
+    <form id="searchBar">
+        <input type="hidden" name="page" value="<?=$page?>">
+        <input type="hidden" name="list" value="<?=$list?>">
+        <select name="searchOption" id="option">
+            <option value="1" <?php $crud->optionSelected($_GET['searchOption'],"1"); ?>>seq</option>
+            <option value="2" <?php $crud->optionSelected($_GET['searchOption'],"2"); ?>>userId</option>
+            <option value="3" <?php $crud->optionSelected($_GET['searchOption'],"3"); ?>>Phone</option>
+            <option value="4" <?php $crud->optionSelected($_GET['searchOption'],"4"); ?>>seq+userId</option>
+        </select>
+        <input id="contents" type="text" name="searchContents" value="">
+        <input type="hidden" name="seq" value="<?=$seq?>">
+        <input type="hidden" name="process" value="<?=$process?>">
+    </form>
+    
+</body>
+</html>

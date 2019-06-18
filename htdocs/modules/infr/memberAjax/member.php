@@ -108,7 +108,7 @@
                             ";
                 $result4 = $crud->excute($query4);
                 $crud->alert("insert success");
-                echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");
+                echo("<script>location.replace('/modules/infr/memberAjax/memberList.html?$q');</script>");
             }
         }
     } else if ($_POST['process'] == "update"){ 
@@ -171,7 +171,7 @@
 
             echo $query."<br>".$query2."<br>".$query3."<br>".$query4;
             $crud->alert("update success");
-            echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");
+            echo("<script>location.replace('/modules/infr/memberAjax/memberList.html?$q');</script>");
         }
     } else if ($_POST['process'] == "delete") {
         $seq = $_POST['delete_seq'];
@@ -198,7 +198,7 @@
         $delResult = $crud->excute($delQuery);
 
         $crud->alert("delete success");
-        // echo("<script>location.replace('/modules/infr/memberClass/memberList.html?$q');</script>");
+        echo("<script>location.replace('/modules/infr/memberAjax/memberList.html?$q');</script>");
 
     }else{
         exit;

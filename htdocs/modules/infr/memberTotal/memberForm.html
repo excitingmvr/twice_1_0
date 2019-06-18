@@ -1,0 +1,84 @@
+<?php
+    ini_set("display_errors",0);
+    $seq = $_GET['seq'];
+    $realData = json_decode(file_get_contents("http://localhost/modules/infr/memberTotal/read_one.php?seq={$seq}"),true);
+    
+
+
+    $realData['year'] = $tmp[0];
+    $realData['month'] = $tmp[1];
+    $realData['day'] = $tmp[2];
+
+    print_r($realData);
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <title>Document</title>
+</head>
+<script>
+    function validation() {
+        if($("#password").val() == "") {
+            alert("빈 값은 입력할 수 없습니다.");
+            return false;
+        } else {
+            if ($('#password').val().length < 8) {
+                alert("최소 8자 이상 입력해주세요.");
+                return false;
+            } else {
+                if($('#password').val() == $('#passwordValidation').val()) {
+                    return true;
+                }
+                alert("비밀번호가 일치하지 않습니다.");
+                return false;
+            }
+        }
+    }
+</script>
+<body>
+    <? if(empty($realData)) { ?>
+        <form method='post' action='./create.php' onsubmit="return validation();">
+    <? } else { ?>
+        <input type="hidden" name="seq" value="<?=$realData['ifmbSeq'];?>">
+        <form method='post' action='./update.php'>
+    <?} ?>
+        아이디<input type="text" name="userId" <? if(isset($realData)) echo "value={$realData['ifmbId']}"; ?>><br>
+        <? if(empty($realData)) { ?>
+            비밀번호<input id="password" type="password" name="password" ><br>
+            비밀번호확인<input type="password" name="checkPassword" id="passwordValidation"  ><br>
+        <? } ?>
+        이름<input type='text' name='firstName' <? if(isset($realData)) echo "value={$realData['ifmbFirstName']}"; ?>><br>
+        성<input type="text" name="lastName" <? if(isset($realData)) echo "value={$realData['ifmbLastName']}"; ?>><br>
+        이메일주소<input type="email" name="email" <? if(isset($realData)) echo "value={$realData['ifmeEmail']}"; ?>><br>
+        전화번호<input type="text" name="middleNumber" <? if(isset($realData)) echo "value={$realData['ifmpPhone2']}"; ?>>
+        <input type="text" name="lastNumber" <? if(isset($realData)) echo "value={$realData['ifmpPhone3']}"; ?>><br>
+        생일<select name="year" id="">
+            <option value="1999" <? if($realData['year'] == "1999") echo "selected"; ?>>1999</option>
+            <option value="2000" <? if($realData['year'] == "2000") echo "selected"; ?>>2000</option>
+            <option value="2001" <? if($realData['year'] == "2001") echo "selected"; ?>>2001</option>
+        </select>
+        <select name="month" id="">
+            <option value="01" <? if($realData['month'] == "01") echo "selected"; ?>>1</option>
+            <option value="02" <? if($realData['month'] == "02") echo "selected"; ?>>2</option>
+            <option value="03" <? if($realData['month'] == "03") echo "selected"; ?>>3</option>
+        </select>
+        <select name="day" id="">
+            <option value="01" <? if($realData['day'] == "01") echo "selected"; ?>>1</option>
+            <option value="02" <? if($realData['day'] == "02") echo "selected"; ?>>2</option>
+            <option value="03" <? if($realData['day'] == "03") echo "selected"; ?>>3</option>
+        </select> <br>
+        성별<select name="gender" id="">
+            <option value="1"">남자</option>
+            <option value="2"">여자</option>
+        </select><br>
+        주소<input type="text" name="address" <? if(isset($realData)) echo "value={$realData['ifmaAddress']}"; ?>><br>
+        <input type="submit" value="ok" >
+    </form>
+    <a href="javascript:location.href = './ajax.html?';">go list</a>
+</body>
+</html>

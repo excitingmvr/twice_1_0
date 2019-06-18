@@ -1,0 +1,170 @@
+<?php
+
+    include_once "./Crud.php";
+    
+        $crud = NEW Crud();
+        $page = $_GET['page'];
+        $list = $_GET['list'];
+        $searchOption = $_GET['searchOption'];
+        $searchContents = $_GET['searchContents'];
+
+        $query_arr['page']= $page;
+        $query_arr['list']=$list;
+        $query_arr['searchOption']=$searchOption;
+        $query_arr['searchContents']=$searchContents;
+        $query_arr['seq']="";
+        $query_arr['process']="list";
+        $q = http_build_query($query_arr);
+
+        if(!empty($searchOption) && !empty($searchContents)) {
+            $col;
+            $cols;
+            
+           switch ($searchOption) {
+                case 1 : $col = "ifmb.ifmbSeq";
+                        break;
+                case 2 : $col = "ifmb.ifmbId";
+                        break;
+                case 3 : $col = "phone";
+                         $cols[0] = "ifmp.ifmpPhone2";
+                         $cols[0] = "ifmp.ifmpPhone3";
+                        break;
+                case 4 : $col = "all";
+                         $cols[0] = "ifmb.ifmbSeq";
+                         $cols[1] = "ifmb.ifmbId";
+                        break;
+                default : $col = "none";
+                        break;
+            }
+            if ($col != "none") {
+                if ($col == "all"){
+                    $query = 
+                            $crud->getSelectQuery().
+                            " 
+                                AND 
+                                    $cols[0] LIKE \"%$searchContents%\"
+                                OR 
+                                    $cols[1] LIKE \"%$searchContents%\"
+                            ";
+                } else if($col == "phone"){
+                    $query = $crud->getSelectQuery().
+                            "  
+                                AND
+                                    ifmp.ifmpPhone2 LIKE \"%$searchContents%\"
+                                OR 
+                                    ifmp.ifmpPhone3 LIKE \"%$searchContents%\"
+                            ";
+                } else {
+                    $query = $crud->getSelectQuery().
+                            "              
+                                AND 
+                                    $col LIKE \"%$searchContents%\"
+                            ";
+                }
+             } else {   
+                $query = $crud->getSelectQuery();  
+            }
+        } else {
+            $query = $crud->getSelectQuery(); 
+        }
+        $result = $crud->excute($query);
+        $total = mysqli_num_rows($result);
+
+        $block = 3;
+        $totalPage = ceil($total/$list);
+        $totalBlock = ceil($totalPage/$block);
+        $nowBlock = ceil($page/$block);
+
+        $startPage = ($nowBlock * $block) -2;
+        if ($startPage <= 1) {
+            $startPage = 1;
+        }
+        $endPage = $nowBlock * $block;
+        if ($totalPage <= $endPage) {
+            $endPage = ($totalPage==0)?1:$totalPage;
+        }
+        $startPoint = ($page-1) * $list;
+        if($startPoint < 1) {
+            $startPoint = 0;
+        }
+
+        $query2 = $query." LIMIT $startPoint,$list;";
+        $result = $crud->getData($query2);
+
+        function highlight ($i) {
+            global $page;
+            if($page == $i) {
+                echo " style=\"background-color:yellow\"";
+            }
+        }
+
+        ?>
+    <div id="list_wrap">
+        <div style="min-height:580px">
+            <table border=1 width="100%">
+                <thead>
+                    <tr>
+                        <th>ifmbSeq</th> 
+                        <th>ifmbId</th>
+                        <th>ifmbFirstName</th>
+                        <th>ifmbLastName</th>
+                        <th>ifmbDob</th>
+                        <th>ifmeEmail</th>
+                        <th>ifmpPhone2</th>
+                        <th>ifmpPhone3</th>
+                        <th>ifmaAddress</th>
+                    </tr>
+                    <!--?php if($_GET['searchOption']==3 && $_GET['searchContents'] != "") echo "<th>phoneNumber</th>"; ?-->
+                </thead>
+                <tbody>
+                <?php 
+                    foreach($result as $key => $row) {
+                        $query_arr['seq']=$row['ifmbSeq'];
+                        $q = http_build_query($query_arr);
+                        if ($row == false) {
+                            break;
+                        }
+                    ?>
+                    <tr>
+                        <td><?=$row['ifmbSeq']?></td>
+                        <td><a href="./memberView.html?<?=$q?>"><?=$row['ifmbId']?></a></td>
+                        <td><?=$row['ifmbFirstName']?></td>
+                        <td><?=$row['ifmbLastName']?></td>
+                        <td><?=$row['ifmbDob']?></td>
+                        <td><?=$row['ifmeEmail']?></td>
+                        <td><?=$row['ifmpPhone2']?></td>
+                        <td><?=$row['ifmpPhone3']?></td>
+                        <td><?=$row['ifmaAddress']?></td>
+                    </tr>
+                <?php 
+                    };
+                    $crud->close();
+                    $query_arr['seq']="";
+                    $query_arr['process']="insert";
+                    $q = http_build_query($query_arr);
+                ?>
+                </tbody>
+            </table>
+        </div>
+        <a href="./memberForm.html?<?=$q;?>">go memberForm</a><br>
+        <div class="paging_bar">
+            <a href="#list_wrap" data-page="1">처음</a>
+            <?php
+            if($startPage > 1) { ?>
+                <a href="#list_wrap" data-page="<?=$page-1?>">이전</a>
+            <?php 
+            }
+            
+            for($p=$startPage; $p<=$endPage; $p++){ ?>
+                <a href="#list_wrap" data-page="<?=$p;?>" <?php highlight($p); ?>><?=$p;?></a>
+            <?php } 
+            if($endPage < $totalPage){ ?>
+                <a href="#list_wrap" data-page="<?=$page+1?>">다음</a>
+            <?php } ?>
+            <a href="#list_wrap" data-page="<?=$totalPage;?>">끝</a>
+        </div>
+    </div>
+    
+
+
+        

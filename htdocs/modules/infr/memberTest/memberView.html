@@ -5,11 +5,6 @@
     $crud = new Crud();
     $seq = $_GET['seq'];
 
-    $query_arr = $_GET;
-    $query_arr['process'] = "update";
-
-    $q = http_build_query($query_arr);
-
 
     $query = "
                 SELECT 
@@ -63,14 +58,14 @@
     <p>ifmpPhone2=<?=$row['ifmpPhone2']?></p>
     <p>ifmpPhone3=<?=$row['ifmpPhone3']?></p>
     <p>ifmaAddress=<?=$row['ifmaAddress']?></p>
-    <form method="post" action="./member.php?<?=$q?>">
+    <form method="post" action="./member.php">
         <input type="hidden" name="delete_seq" value="<?=$row['ifmbSeq']?>">
         <input type="hidden" name="process" value="delete">
         <input type="submit" value="delete">
     </form>
     
-    <a href="javascript:location.replace('./memberList.html?<?=$q?>');">go list</a><br>
-    <a href="javascript:location.replace('./memberForm.html?<?=$q?>');">go update</a>
+    <a href='./memberList.html'>go list</a><br>
+    <a href="./memberForm.html?process=update&seq=<?=$row['ifmbSeq']?>">go update</a>
     <?php $crud->close(); ?>
 </body>
 </html>

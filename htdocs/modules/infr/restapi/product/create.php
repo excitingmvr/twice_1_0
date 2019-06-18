@@ -10,42 +10,33 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 include_once '../config/database.php';
  
 // instantiate product object
-include_once '../objects/member.php';
+include_once '../objects/product.php';
  
 $database = new Database();
 $db = $database->getConnection();
  
-$member = new Member($db);
+$product = new Product($db);
  
 // get posted data
 $data = json_decode(file_get_contents("php://input"));
  
 // make sure data is not empty
 if(
-    !empty($data->ifmbId) &&
-    !empty($data->ifmbFirstName) &&
-    !empty($data->ifmbLastName) &&
-    !empty($data->ifmbDob) &&
-    !empty($data->ifmbGenderCd) &&
-    !empty($data->ifmeEmail) &&
-    !empty($data->ifmpPhone2) &&
-    !empty($data->ifmpPhone3) &&
-    !empty($data->ifmaAddress) 
+    !empty($data->name) &&
+    !empty($data->price) &&
+    !empty($data->description) &&
+    !empty($data->category_id)
 ){
  
     // set product property values
-    $member->ifmbId = $data->ifmbId;
-    $member->ifmbFirstName = $data->ifmbFirstName;
-    $member->ifmbLastName = $data->ifmbLastName;
-    $member->ifmbDob = $data->ifmbDob;
-    $member->ifmbGenderCd = $data->ifmbGenderCd;
-    $member->ifmeEmail = $data->ifmeEmail;
-    $member->ifmpPhone2 = $data->ifmpPhone2;
-    $member->ifmpPhone3 = $data->ifmpPhone3;
-    $member->ifmaAddress = $data->ifmaAddress;
-    
+    $product->name = $data->name;
+    $product->price = $data->price;
+    $product->description = $data->description;
+    $product->category_id = $data->category_id;
+    $product->created = date('Y-m-d H:i:s');
+ 
     // create the product
-    if($member->create()){
+    if($product->create()){
  
         // set response code - 201 created
         http_response_code(201);
